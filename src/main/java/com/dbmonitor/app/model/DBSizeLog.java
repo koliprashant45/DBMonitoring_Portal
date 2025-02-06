@@ -17,6 +17,7 @@ public class DBSizeLog {
         this.sizeInMB = sizeInMB;
     }
 
+    // Getters and Setters
     public int getLogId() { return logId; }
     public void setLogId(int logId) { this.logId = logId; }
 

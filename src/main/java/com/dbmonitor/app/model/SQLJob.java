@@ -21,6 +21,7 @@ public class SQLJob {
         this.runDuration = runDuration;
     }
 
+    // Getters and Setters
     public int getJobId() { return jobId; }
     public void setJobId(int jobId) { this.jobId = jobId; }
 
