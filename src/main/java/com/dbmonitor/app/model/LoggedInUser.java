@@ -1,10 +1,22 @@
 package com.dbmonitor.app.model;
 
+import jakarta.persistence.*;
 import java.sql.Timestamp;
 
+@Entity
+@Table(name = "logged_in_users")
 public class LoggedInUser {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Column(name = "session_id")
     private int sessionId;
+
+    @Column(name = "username")
     private String username;
+
+    @Column(name = "login_time")
     private Timestamp loginTime;
 
     public LoggedInUser() {}

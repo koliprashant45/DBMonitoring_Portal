@@ -1,22 +1,35 @@
 package com.dbmonitor.app.model;
 
+import jakarta.persistence.*;
 import java.sql.Timestamp;
 
+@Entity
+@Table(name = "db_size_logs")
 public class DBSizeLog {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Column(name = "log_id")
     private int logId;
-    private Timestamp logDate;
+
+    @Column(name = "database_name")
     private String databaseName;
+
+    @Column(name = "size_in_mb")
     private double sizeInMB;
+
+    @Column(name = "log_date")
+    private Timestamp logDate;
 
     public DBSizeLog() {}
 
-    public DBSizeLog(int logId, Timestamp logDate, String databaseName, double sizeInMB) {
+    public DBSizeLog(int logId, String databaseName, double sizeInMB, Timestamp logDate) {
         this.logId = logId;
-        this.logDate = logDate;
         this.databaseName = databaseName;
         this.sizeInMB = sizeInMB;
+        this.logDate = logDate;
     }
-
     // Getters and Setters
     public int getLogId() { return logId; }
     public void setLogId(int logId) { this.logId = logId; }

@@ -20,9 +20,9 @@ public class DBSizeDao {
             while (rs.next()) {
                 logs.add(new DBSizeLog(
                         rs.getInt("log_id"),
-                        rs.getTimestamp("log_date"),
                         rs.getString("database_name"),
-                        rs.getDouble("size_in_mb")
+                        rs.getDouble("size_in_mb"),
+                        rs.getTimestamp("log_date")
                 ));
             }
         } catch (SQLException e) {

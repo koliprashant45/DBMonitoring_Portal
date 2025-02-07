@@ -1,18 +1,35 @@
 package com.dbmonitor.app.model;
 
+import jakarta.persistence.*;
 import java.sql.Timestamp;
 
+@Entity
+@Table(name = "sql_jobs")
 public class SQLJob {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "job_id")
     private int jobId;
+
+    @Column(name = "job_name")
     private String jobName;
+
+    @Column(name = "status")
     private String status;
+
+    @Column(name = "start_time")
     private Timestamp startTime;
+
+    @Column(name = "end_time")
     private Timestamp endTime;
-    private int runDuration; // in seconds
+
+    @Column(name = "run_duration")
+    private Integer runDuration;
 
     public SQLJob() {}
 
-    public SQLJob(int jobId, String jobName, String status, Timestamp startTime, Timestamp endTime, int runDuration) {
+    public SQLJob(int jobId, String jobName, String status, Timestamp startTime, Timestamp endTime, Integer runDuration) {
         this.jobId = jobId;
         this.jobName = jobName;
         this.status = status;
@@ -37,6 +54,6 @@ public class SQLJob {
     public Timestamp getEndTime() { return endTime; }
     public void setEndTime(Timestamp endTime) { this.endTime = endTime; }
 
-    public int getRunDuration() { return runDuration; }
-    public void setRunDuration(int runDuration) { this.runDuration = runDuration; }
+    public Integer getRunDuration() { return runDuration; }
+    public void setRunDuration(Integer runDuration) { this.runDuration = runDuration; }
 }
