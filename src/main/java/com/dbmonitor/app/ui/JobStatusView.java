@@ -31,6 +31,9 @@ public class JobStatusView extends VerticalLayout {
         configureFilters();
         configureGrid();
         add(new HorizontalLayout(statusFilter, dateFilter), jobGrid);
+
+        setSizeFull();
+        jobGrid.setSizeFull();
     }
 
     private void configureFilters() {
