@@ -7,7 +7,6 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
-import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 public class MainLayout extends AppLayout {
@@ -33,7 +32,7 @@ public class MainLayout extends AppLayout {
         SideNav sideNav = new SideNav();
         sideNav.addItem(
                 new SideNavItem("Dashboard", String.valueOf(DashboardView.class), VaadinIcon.HOME.create()),
-                new SideNavItem("Job Status", String.valueOf(JobStatusView.class), VaadinIcon.DASHBOARD.create()),
+                new SideNavItem("Job Status", JobStatusView.class, VaadinIcon.DASHBOARD.create()),
                 new SideNavItem("Database Size Monitoring", String.valueOf(DBSizeView.class), VaadinIcon.CHART.create()),
                 new SideNavItem("Logged-in Users", String.valueOf(LoggedInUsersView.class), VaadinIcon.USER.create())
         );
