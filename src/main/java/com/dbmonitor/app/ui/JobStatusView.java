@@ -13,6 +13,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,7 @@ public class JobStatusView extends VerticalLayout {
 
     private final Grid<SQLJob> jobGrid = new Grid<>();
     private final SQLJobService jobService;
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy; hh:mm a");
     private final Select<String> statusFilter = new Select<>();
     private final DatePicker dateFilter = new DatePicker("Filter by Date");
 
@@ -39,7 +41,7 @@ public class JobStatusView extends VerticalLayout {
     private void configureFilters() {
         // Status Filter
         statusFilter.setLabel("Filter by Status");
-        statusFilter.setItems("All", "Completed", "Running", "Success", "Failed");
+        statusFilter.setItems("All", "Completed", "Running", "Pending", "Failed");
         statusFilter.setValue("All");
         statusFilter.addValueChangeListener(e -> applyFilters());
 
@@ -61,9 +63,9 @@ public class JobStatusView extends VerticalLayout {
         jobGrid.addColumn(SQLJob::getJobId).setHeader("Job ID").setWidth("80px").setFlexGrow(0);
         jobGrid.addColumn(SQLJob::getJobName).setHeader("Job Name").setResizable(true);
         jobGrid.addColumn(SQLJob::getStatus).setHeader("Status").setResizable(true);
-        jobGrid.addColumn(job -> job.getStartTime() != null ? job.getStartTime().toString() : "N/A")
+        jobGrid.addColumn(job -> job.getStartTime() != null ? job.getStartTime().toLocalDateTime().format(DATE_FORMATTER) : "N/A")
                 .setHeader("Start Time").setResizable(true);
-        jobGrid.addColumn(job -> job.getEndTime() != null ? job.getEndTime().toString() : "N/A")
+        jobGrid.addColumn(job -> job.getEndTime() != null ? job.getEndTime().toLocalDateTime().format(DATE_FORMATTER) : "N/A")
                 .setHeader("End Time").setResizable(true);
         jobGrid.addColumn(SQLJob::getRunDuration).setHeader("Run Duration").setResizable(true);
 
