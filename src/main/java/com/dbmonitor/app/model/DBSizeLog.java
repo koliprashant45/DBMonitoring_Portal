@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "db_size_logs")
+@Table(name = "db_size_log")
 public class DBSizeLog {
 
     @Id

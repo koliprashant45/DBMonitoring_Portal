@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/dbsizelogs")
+@RequestMapping("/api/dbsizelog")
 @CrossOrigin(origins = "*")
 public class DBSizeLogController {
 
