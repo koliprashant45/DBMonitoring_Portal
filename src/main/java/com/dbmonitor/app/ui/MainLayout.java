@@ -34,8 +34,9 @@ public class MainLayout extends AppLayout {
                 new SideNavItem("Dashboard", String.valueOf(DashboardView.class), VaadinIcon.HOME.create()),
                 new SideNavItem("Job Status", JobStatusView.class, VaadinIcon.DASHBOARD.create()),
                 new SideNavItem("Database Size Monitoring", String.valueOf(DBSizeView.class), VaadinIcon.CHART.create()),
-                new SideNavItem("Logged-in Users", String.valueOf(LoggedInUsersView.class), VaadinIcon.USER.create())
+                new SideNavItem("Logged-in Users", LoggedInUsersView.class, VaadinIcon.USER.create())
         );
         return sideNav;
     }
+
 }
