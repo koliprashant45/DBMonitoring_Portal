@@ -52,7 +52,7 @@ public class JobStatusView extends VerticalLayout {
     }
 
     private void configureGrid() {
-        jobGrid.addColumn(SQLJob::getJobId).setHeader("Job ID").setWidth("80px").setFlexGrow(0).setSortable(true);
+        jobGrid.addColumn(SQLJob::getJobId).setHeader("Job ID").setWidth("80px").setFlexGrow(0);
         jobGrid.addColumn(SQLJob::getJobName).setHeader("Job Name").setResizable(true).setSortable(true);
         jobGrid.addColumn(SQLJob::getStatus).setHeader("Status").setResizable(true).setSortable(true);
         jobGrid.addColumn(this::formatStartTime).setHeader("Start Time").setResizable(true).setSortable(true);
