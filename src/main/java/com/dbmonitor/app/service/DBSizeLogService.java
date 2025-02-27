@@ -14,7 +14,10 @@ public class DBSizeLogService {
     private DBSizeLogRepository dbSizeLogRepository;
 
     public List<DBSizeLog> getAllLogs() {
-
         return dbSizeLogRepository.findAll();
+    }
+
+    public List<DBSizeLog> searchLogsByDatabaseName(String databaseName) {
+        return dbSizeLogRepository.findByDatabaseNameContainingIgnoreCase(databaseName);
     }
 }
