@@ -57,7 +57,7 @@ public class JobStatusView extends VerticalLayout {
         jobGrid.addColumn(SQLJob::getStatus).setHeader("Status").setResizable(true).setSortable(true);
         jobGrid.addColumn(this::formatStartTime).setHeader("Start Time").setResizable(true).setSortable(true);
         jobGrid.addColumn(this::formatEndTime).setHeader("End Time").setResizable(true).setSortable(true);
-        jobGrid.addColumn(SQLJob::getRunDuration).setHeader("Run Duration").setResizable(true).setSortable(true);
+        jobGrid.addColumn(SQLJob::getRunDuration).setHeader("Run Duration (min)").setResizable(true).setSortable(true);
     }
 
     private void configureFilters() {
