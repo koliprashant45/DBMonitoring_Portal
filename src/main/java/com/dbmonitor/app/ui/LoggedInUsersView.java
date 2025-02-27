@@ -28,6 +28,7 @@ public class LoggedInUsersView extends VerticalLayout {
     private final LoggedInUserService userService;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy; hh:mm a");
     private final Select<String> statusFilter = new Select<>();
+    private final Select<String> roleFilter = new Select<>();
     private final TextField usernameSearch = new TextField("Search by Username");
 
     @Autowired
@@ -36,13 +37,19 @@ public class LoggedInUsersView extends VerticalLayout {
         configureFilters();
         configureGrid();
 
-        add(new HorizontalLayout(statusFilter, usernameSearch), userGrid);
+        add(new HorizontalLayout(roleFilter, statusFilter, usernameSearch), userGrid);
 
         setSizeFull();
         userGrid.setSizeFull();
     }
 
     private void configureFilters() {
+        // User Role Filter
+        roleFilter.setLabel("Filter by Role");
+        roleFilter.setItems("All", "Admin", "User", "Developer", "Support Engineer");
+        roleFilter.setValue("All");
+        roleFilter.addValueChangeListener(e -> applyFilters());
+
         // Status Filter
         statusFilter.setLabel("Filter by Status");
         statusFilter.setItems("All", "Active", "Inactive", "Logged Out");
@@ -53,11 +60,13 @@ public class LoggedInUsersView extends VerticalLayout {
         usernameSearch.setPlaceholder("Enter username");
         usernameSearch.setValueChangeMode(ValueChangeMode.EAGER);
         usernameSearch.addValueChangeListener(e -> applyFilters());
+
     }
 
     private void applyFilters() {
         List<LoggedInUser> filteredUsers = userService.getAllUsers().stream()
                 .filter(user -> "All".equals(statusFilter.getValue()) || user.getStatus().equalsIgnoreCase(statusFilter.getValue()))
+                .filter(user -> "All".equals(roleFilter.getValue()) || user.getUserRole().equalsIgnoreCase(roleFilter.getValue()))
                 .filter(user -> usernameSearch.getValue().isEmpty() ||
                         user.getUsername().toLowerCase().contains(usernameSearch.getValue().trim().toLowerCase()))
                 .collect(Collectors.toList());
@@ -77,21 +86,25 @@ public class LoggedInUsersView extends VerticalLayout {
 
         userGrid.addColumn(LoggedInUser::getUserRole)
                 .setHeader("User Role")
-                .setResizable(true);
+                .setResizable(true)
+                .setSortable(true);
 
         userGrid.addColumn(user -> user.getLoginTime() != null
                         ? user.getLoginTime().toLocalDateTime().format(DATE_FORMATTER) : "N/A")
                 .setHeader("Login Time")
-                .setResizable(true);
+                .setResizable(true)
+                .setSortable(true);
 
         userGrid.addColumn(user -> user.getLogoutTime() != null
                         ? user.getLogoutTime().toLocalDateTime().format(DATE_FORMATTER) : "N/A")
                 .setHeader("Logout Time")
-                .setResizable(true);
+                .setResizable(true)
+                .setSortable(true);
 
         userGrid.addColumn(LoggedInUser::getStatus)
                 .setHeader("Status")
-                .setResizable(true);
+                .setResizable(true)
+                .setSortable(true);
 
         // Terminate Button with Confirmation Dialog
         userGrid.addComponentColumn(user -> {
