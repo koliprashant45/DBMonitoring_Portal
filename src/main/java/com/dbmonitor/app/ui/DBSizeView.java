@@ -3,6 +3,7 @@ package com.dbmonitor.app.ui;
 import com.dbmonitor.app.model.DBSizeLog;
 import com.dbmonitor.app.service.DBSizeLogService;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -40,9 +41,10 @@ public class DBSizeView extends VerticalLayout {
 
     private void configureFilters() {
         // Search by Database Name
-        databaseSearch.setPlaceholder("Enter database name");
+        databaseSearch.setPlaceholder("Enter DB name");
         databaseSearch.setValueChangeMode(ValueChangeMode.EAGER);
         databaseSearch.addValueChangeListener(e -> applyFilters());
+        databaseSearch.setPrefixComponent(VaadinIcon.SEARCH.create());
     }
 
     private void applyFilters() {
