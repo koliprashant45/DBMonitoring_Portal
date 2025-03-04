@@ -4,21 +4,36 @@ import com.dbmonitor.app.model.SQLJob;
 import com.dbmonitor.app.service.SQLJobService;
 import com.dbmonitor.app.util.DateRangePicker;
 import com.dbmonitor.app.util.LocalDateRange;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
 import jakarta.annotation.PostConstruct;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
-@PageTitle("SQL Job Status")
+@PageTitle("Job Status")
 @Route(value = "job-status", layout = MainLayout.class)
 public class JobStatusView extends VerticalLayout {
 
@@ -28,6 +43,7 @@ public class JobStatusView extends VerticalLayout {
     private final SQLJobService jobService;
     private final Select<String> statusFilter;
     private final DateRangePicker dateRangeFilter;
+    private final Button exportButton;
 
     @Autowired
     public JobStatusView(SQLJobService jobService) {
@@ -35,10 +51,10 @@ public class JobStatusView extends VerticalLayout {
         this.jobGrid = new Grid<>(SQLJob.class, false);
         this.statusFilter = new Select<>();
         this.dateRangeFilter = new DateRangePicker("Filter by Date Range");
+        this.exportButton = new Button("Export to Excel", VaadinIcon.DOWNLOAD.create(), e -> showExportDialog());
 
         configureComponents();
         buildLayout();
-        loadInitialData();
     }
 
     @PostConstruct
@@ -70,11 +86,16 @@ public class JobStatusView extends VerticalLayout {
     }
 
     private void buildLayout() {
-        HorizontalLayout filterLayout = new HorizontalLayout(statusFilter, dateRangeFilter);
+        HorizontalLayout filterLayout = new HorizontalLayout(statusFilter, dateRangeFilter, exportButton);
         filterLayout.setSpacing(true);
         filterLayout.setAlignItems(Alignment.BASELINE);
 
-        add(filterLayout, jobGrid);
+        HorizontalLayout mainLayout = new HorizontalLayout(filterLayout, exportButton);
+        mainLayout.setWidthFull();
+        mainLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
+        mainLayout.setAlignItems(Alignment.BASELINE);
+
+        add(mainLayout, jobGrid);
         setSizeFull();
         jobGrid.setSizeFull();
     }
@@ -113,4 +134,96 @@ public class JobStatusView extends VerticalLayout {
     private String formatEndTime(SQLJob job) {
         return job.getEndTime() != null ? job.getEndTime().toLocalDateTime().format(DATE_FORMATTER) : "N/A";
     }
+
+    private void showExportDialog() {
+
+        ConfirmDialog dialog = new ConfirmDialog();
+        dialog.setHeader("Export Data");
+
+        // Generate Excel File
+        StreamResource excelFile = generateExcelFile();
+        if (excelFile == null) {
+            Notification.show("No data available for export!", 3000, Notification.Position.MIDDLE);
+            return;
+        }
+
+        // Excel Icon
+        Icon excelIcon = VaadinIcon.FILE_TABLE.create();
+        excelIcon.setSize("22px");
+        excelIcon.getStyle().set("color", "#007BFF");
+
+        // Download Link
+        Anchor downloadLink = new Anchor(excelFile, "Download SQL Job Data");
+        downloadLink.getElement().setAttribute("download", "SQL_Job_Status.xlsx");
+        downloadLink.getStyle()
+                .set("font-size", "16px")
+                .set("font-weight", "bold")
+                .set("color", "#007BFF")
+                .set("text-decoration", "none");
+
+        downloadLink.getElement().addEventListener("click", e ->
+                Notification.show("Excel file downloaded successfully!", 3000, Notification.Position.BOTTOM_START)
+        );
+
+        HorizontalLayout downloadLayout = new HorizontalLayout(excelIcon, downloadLink);
+        downloadLayout.setAlignItems(Alignment.CENTER);
+
+        dialog.setText(downloadLayout);
+
+        dialog.setConfirmText("Close");
+        dialog.addConfirmListener(event -> dialog.close());
+
+        dialog.open();
+    }
+
+    private StreamResource generateExcelFile() {
+        List<SQLJob> jobs = jobGrid.getListDataView().getItems().toList();
+
+        if (jobs.isEmpty()) {
+            Notification.show("No data to export!", 3000, Notification.Position.MIDDLE);
+            return null;
+        }
+
+        return new StreamResource("SQL_Job_Status.xlsx", () -> {
+            try {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                Workbook workbook = new XSSFWorkbook();
+                Sheet sheet = workbook.createSheet("SQL Jobs");
+
+                // header row
+                Row headerRow = sheet.createRow(0);
+                String[] headers = {"Job ID", "Job Name", "Status", "Start Time", "End Time", "Run Duration (min)"};
+                for (int i = 0; i < headers.length; i++) {
+                    headerRow.createCell(i).setCellValue(headers[i]);
+                }
+
+                // job data
+                int rowNum = 1;
+                for (SQLJob job : jobs) {
+                    Row row = sheet.createRow(rowNum++);
+                    row.createCell(0).setCellValue(job.getJobId());
+                    row.createCell(1).setCellValue(job.getJobName() != null ? job.getJobName() : "N/A");
+                    row.createCell(2).setCellValue(job.getStatus() != null ? job.getStatus() : "N/A");
+                    row.createCell(3).setCellValue(formatStartTime(job));
+                    row.createCell(4).setCellValue(formatEndTime(job));
+                    row.createCell(5).setCellValue(job.getRunDuration() != null ? job.getRunDuration() : 0);
+                }
+
+                // Auto-size columns
+                for (int i = 0; i < headers.length; i++) {
+                    sheet.autoSizeColumn(i);
+                }
+
+                // Write data to stream
+                workbook.write(out);
+                workbook.close();
+                return new ByteArrayInputStream(out.toByteArray());
+            } catch (IOException e) {
+                throw new RuntimeException("Error generating Excel file", e);
+            }
+        });
+    }
 }
+
+
+
