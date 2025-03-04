@@ -40,7 +40,7 @@ public class MainLayout extends AppLayout {
 
         // Navbar components
         DrawerToggle toggle = new DrawerToggle();
-        viewTitle = new H2("Dashboard"); 
+        viewTitle = new H2("Dashboard");
         viewTitle.getStyle().set("font-size", "var(--lumo-font-size-l)").set("margin", "0");
 
         HorizontalLayout wrapper = new HorizontalLayout(toggle, viewTitle);
@@ -102,7 +102,7 @@ public class MainLayout extends AppLayout {
 
             switch (title) {
                 case "Dashboard":
-                    getUI().ifPresent(ui -> ui.navigate(String.valueOf(DashboardView.class)));
+                    getUI().ifPresent(ui -> ui.navigate(DashboardView.class));
                     break;
                 case "Job Status":
                     getUI().ifPresent(ui -> ui.navigate(JobStatusView.class));
