@@ -153,7 +153,7 @@ public class JobStatusView extends VerticalLayout {
         excelIcon.getStyle().set("color", "#007BFF");
 
         // Download Link
-        Anchor downloadLink = new Anchor(excelFile, "Download SQL Job Data");
+        Anchor downloadLink = new Anchor(excelFile, "Download Job Status Data");
         downloadLink.getElement().setAttribute("download", "SQL_Job_Status.xlsx");
         downloadLink.getStyle()
                 .set("font-size", "16px")
