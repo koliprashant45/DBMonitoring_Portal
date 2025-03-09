@@ -48,4 +48,9 @@ public class DBSizeLog {
 
     public String getFileType() { return fileType; }
     public void setFileType(String fileType) { this.fileType = fileType; }
+
+    @Override
+    public String toString() {
+        return "Database: " + databaseName + ", Size: " + sizeInMB + " MB, Date: " + logDate;
+    }
 }
