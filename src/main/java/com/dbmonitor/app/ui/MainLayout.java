@@ -1,7 +1,10 @@
 package com.dbmonitor.app.ui;
 
+import com.dbmonitor.app.auth.AuthService;
+import com.dbmonitor.app.auth.LoginView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
@@ -12,8 +15,11 @@ import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.server.VaadinSession;
 
-public class MainLayout extends AppLayout {
+public class MainLayout extends AppLayout implements BeforeEnterObserver {
     private final H2 viewTitle;
 
     public MainLayout() {
@@ -25,12 +31,11 @@ public class MainLayout extends AppLayout {
                 .set("color", "white")
                 .set("font-weight", "bold");
 
-        // tabs and scroller
+        // Tabs and drawer layout
         Tabs tabs = createVerticalTabs();
         Scroller scroller = new Scroller(tabs);
         scroller.getStyle().set("padding", "10px");
 
-        // blue color drawer background
         VerticalLayout drawerLayout = new VerticalLayout(appTitle, scroller);
         drawerLayout.getStyle()
                 .set("background", "#2A41D6")
@@ -43,11 +48,37 @@ public class MainLayout extends AppLayout {
         viewTitle = new H2("Dashboard");
         viewTitle.getStyle().set("font-size", "var(--lumo-font-size-l)").set("margin", "0");
 
-        HorizontalLayout wrapper = new HorizontalLayout(toggle, viewTitle);
-        wrapper.setAlignItems(FlexComponent.Alignment.CENTER);
-        wrapper.setSpacing(false);
+        // Logout button with icon
+        Button logoutButton = new Button("Logout", VaadinIcon.SIGN_OUT.create(), event -> {
+            VaadinSession.getCurrent().getSession().invalidate();
+            getUI().ifPresent(ui -> ui.navigate(LoginView.class));
+        });
 
-        VerticalLayout viewHeader = new VerticalLayout(wrapper);
+        logoutButton.getStyle()
+                .set("color", "#2A41D6")
+                .set("border-radius", "6px")
+                .set("padding", "5px 12px")
+                .set("border", "1px solid #2A41D6")
+                .set("font-weight", "bold");
+
+        // Drawer toggle and dashboard title
+        HorizontalLayout leftSection = new HorizontalLayout(toggle, viewTitle);
+        leftSection.setAlignItems(FlexComponent.Alignment.CENTER);
+        leftSection.setSpacing(false);
+        leftSection.getStyle().set("margin", "0");
+
+        // Logout button
+        HorizontalLayout rightSection = new HorizontalLayout(logoutButton);
+        rightSection.setAlignItems(FlexComponent.Alignment.CENTER);
+        rightSection.getStyle().set("margin-right", "15px"); 
+
+        // Main navbar layout
+        HorizontalLayout navbarLayout = new HorizontalLayout(leftSection, rightSection);
+        navbarLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        navbarLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        navbarLayout.setWidthFull();
+
+        VerticalLayout viewHeader = new VerticalLayout(navbarLayout);
         viewHeader.setPadding(false);
         viewHeader.setSpacing(false);
 
@@ -56,7 +87,6 @@ public class MainLayout extends AppLayout {
         addToNavbar(viewHeader);
         setPrimarySection(Section.DRAWER);
     }
-
 
     private Tabs createVerticalTabs() {
         // Tabs with icons and labels
@@ -117,4 +147,10 @@ public class MainLayout extends AppLayout {
         }
     }
 
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        if (!AuthService.isAuthenticated()) {
+            event.forwardTo(LoginView.class);
+        }
+    }
 }
