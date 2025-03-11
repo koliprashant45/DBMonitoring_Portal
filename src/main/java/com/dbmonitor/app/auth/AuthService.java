@@ -4,7 +4,7 @@ import com.vaadin.flow.server.VaadinSession;
 
 public class AuthService {
     public static boolean authenticate(String username, String password) {
-        if ("developer".equals(username) && "password".equals(password)) {
+        if ("admin".equals(username) && "password".equals(password)) {
             VaadinSession.getCurrent().setAttribute("user", username);
             return true;
         }

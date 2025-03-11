@@ -29,7 +29,7 @@ public class DashboardView extends VerticalLayout {
         getStyle().set("text-align", "center");
 
         // Header
-        H3 header = new H3("DB Monitoring Portal");
+        H3 header = new H3("DB Monitoring Quick Insights");
         header.getStyle().set("font-size", "24px").set("font-weight", "bold");
 
         Hr divider = new Hr();
